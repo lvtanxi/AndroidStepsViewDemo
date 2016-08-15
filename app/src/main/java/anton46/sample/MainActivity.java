@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,9 +28,15 @@ public class MainActivity extends AppCompatActivity {
 
         MyAdapter adapter = new MyAdapter(this, 0);
         adapter.addAll(views);
-
         mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new ListView.OnItemClickListener(){
 
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TestDialog testDialog=new TestDialog();
+                testDialog.show(getSupportFragmentManager(),"asd");
+            }
+        });
     }
 
     public static class MyAdapter extends ArrayAdapter<String> {
