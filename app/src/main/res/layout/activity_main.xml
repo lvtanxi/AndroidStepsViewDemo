@@ -12,6 +12,8 @@
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
+        android:listSelector="@null"
+        android:background="@android:color/white"
         android:layout_height="match_parent"/>
 
 </LinearLayout>

@@ -3,4 +3,21 @@
     <color name="red">#ff144f</color>
     <color name="blue">#03A9F4</color>
     <color name="orange">#fffaaa00</color>
+
+    <color name="btn_cancel_color">#999999</color>
+    <color name="btn_confirm_color">#303F9F</color>
+    <color name="TOAST_COLOR">#88000000</color>
+    <color name="COLOR_BORDER_LINE">#d7d7d7</color>
+    <color name="WINDOW_BACKGROUND">#F8F8F8</color>
+    <color name="alertdialog_line">#c6c6c6</color>
+    <color name="actionsheet_blue">#037BFF</color>
+    <color name="actionsheet_red">#FD4A2E</color>
+    <color name="actionsheet_gray">#8F8F8F</color>
+    <color name="black">#222222</color>
+    <color name="trans">#00000000</color>
+    <color name="dividerColor">#AAAAAA</color>
+    <color name="colorAccent">#FC4103</color>
+    <color name="not_enabled">#e0e1e3</color>
+    <color name="gray">#666666</color>
+    <color name="title_nomal">#262626</color>
 </resources>
