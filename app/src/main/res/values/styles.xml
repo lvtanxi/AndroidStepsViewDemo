@@ -35,26 +35,32 @@
     <style name="ChoosDateSt">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">1dp</item>
         <item name="android:layout_weight">1</item>
         <item name="itemNumber">5</item>
         <item name="lineColor">#ffff6000</item>
-        <item name="maskHight">32dp</item>
         <item name="noEmpty">true</item>
         <item name="normalTextColor">#777</item>
         <item name="normalTextSize">14sp</item>
         <item name="selecredTextColor">#ff000000</item>
         <item name="selecredTextSize">22sp</item>
-        <item name="unitHight">50dp</item>
+        <item name="unitHight">40dp</item>
     </style>
 
-    <style name="def_alert_dialog" >
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+    <style name="def_alert_dialog">
+        <item name="android:windowFullscreen">true</item>
         <item name="android:windowAnimationStyle">@style/CustDialogAnimation</item>
-        <item name="android:width">150dp</item>
+        <!-- 背景透明 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 浮于Activity之上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 边框 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- Dialog以外的区域模糊效果 -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 无标题 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

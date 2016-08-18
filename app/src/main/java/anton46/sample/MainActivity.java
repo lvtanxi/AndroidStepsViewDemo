@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.anton46.stepsview.StepsView;
 
-import anton46.sample.view.popwindow.DatePickerPopWin;
+import anton46.sample.view.popwindow.DatePickerDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,18 +36,22 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-              /*  DateDialog dateDialog=new DateDialog(MainActivity.this);
-                dateDialog.show();*/
-               new DatePickerPopWin.Builder(MainActivity.this)
-                        .onDatePickedListener(new DatePickerPopWin.OnDatePickedListener() {
-                            @Override
-                            public void onDatePickCompleted(int year, int month, int day, String dateDesc) {
-                                Toast.makeText(MainActivity.this, dateDesc, Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .minYear(2016) //min year in loop
-                        .build()
-                        .showPopWin();
+
+                if(position%2==0){
+                    new DatePickerDialog.Builder(MainActivity.this)
+                            .onDatePickedListener(new DatePickerDialog.OnDatePickedListener() {
+                                @Override
+                                public void onDatePickCompleted(int year, int month, int day, String dateDesc) {
+                                    Toast.makeText(MainActivity.this, dateDesc, Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .minYear(2016) //min year in loop
+                            .build()
+                            .show();
+                    return;
+                }
+                     DateDialog dateDialog=new DateDialog(MainActivity.this);
+                dateDialog.show();
             }
         });
     }

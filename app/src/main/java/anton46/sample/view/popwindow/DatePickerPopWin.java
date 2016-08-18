@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,13 +52,8 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
     List<String> dayList = new ArrayList();
 
     public static class Builder {
-        //Required
         private Activity mActivity;
         private OnDatePickedListener mDatePickedListener;
-
-        public Builder(Activity activity) {
-            this.mActivity = activity;
-        }
         private boolean showDayMonthYear = false;
         private int minYear = DEFAULT_MIN_YEAR;
         private int maxYear = Calendar.getInstance().get(Calendar.YEAR) + 1;
@@ -68,6 +64,12 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
         private int colorConfirm = Color.parseColor("#303F9F");
         private int btnTextSize = 16;//text btnTextsize of cancel and confirm button
         private int viewTextSize = 25;
+
+
+        public Builder(Activity activity) {
+            this.mActivity = activity;
+        }
+
 
         public Builder minYear(int minYear) {
             this.minYear = minYear;
@@ -109,11 +111,6 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
             return this;
         }
 
-        /**
-         * set btn text btnTextSize
-         *
-         * @param textSize dp
-         */
         public Builder btnTextSize(int textSize) {
             this.btnTextSize = textSize;
             return this;
@@ -141,22 +138,11 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
         this.builder = builder;
         setSelectedDate(builder.dateChose);
         initView();
+        initData();
+        bindListener();
     }
 
-
-    private void initView() {
-
-        contentView = LayoutInflater.from(builder.mActivity).inflate(builder.showDayMonthYear ? R.layout.layout_date_picker_inverted : R.layout.layout_date_picker, null);
-        cancelBtn = (Button) contentView.findViewById(R.id.btn_cancel);
-        confirmBtn = (Button) contentView.findViewById(R.id.btn_confirm);
-        yearLoopView = (LoopView) contentView.findViewById(R.id.picker_year);
-        monthLoopView = (LoopView) contentView.findViewById(R.id.picker_month);
-        dayLoopView = (LoopView) contentView.findViewById(R.id.picker_day);
-        pickerContainerV = contentView.findViewById(R.id.container_picker);
-        cancelBtn.setText(builder.textCancel);
-        cancelBtn.setTextColor(builder.colorCancel);
-        confirmBtn.setText(builder.textConfirm);
-        confirmBtn.setTextColor(builder.colorConfirm);
+    private void bindListener() {
 
         yearLoopView.setLoopListener(new LoopView.LoopScrollListener() {
             @Override
@@ -178,26 +164,56 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
                 dayPos = item;
             }
         });
+        cancelBtn.setOnClickListener(this);
+        confirmBtn.setOnClickListener(this);
+        contentView.setOnClickListener(this);
+        contentView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void initData() {
+        setTouchable(true);
+        setFocusable(true);
+        setOutsideTouchable(true);
+
+        setContentView(contentView);
+        setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        cancelBtn.setText(builder.textCancel);
+        cancelBtn.setTextColor(builder.colorCancel);
+        cancelBtn.setTextSize(builder.btnTextSize);
+        confirmBtn.setTextSize(builder.btnTextSize);
+        confirmBtn.setText(builder.textConfirm);
+        confirmBtn.setTextColor(builder.colorConfirm);
+        yearLoopView.setTextSize(builder.viewTextSize);
+        monthLoopView.setTextSize(builder.viewTextSize);
+        dayLoopView.setTextSize(builder.viewTextSize);
+    }
+
+
+    private void initView() {
+        contentView = LayoutInflater.from(builder.mActivity).inflate(builder.showDayMonthYear ? R.layout.layout_date_picker_inverted : R.layout.layout_date_picker, null);
+        cancelBtn = (Button) contentView.findViewById(R.id.btn_cancel);
+        confirmBtn = (Button) contentView.findViewById(R.id.btn_confirm);
+        yearLoopView = (LoopView) contentView.findViewById(R.id.picker_year);
+        monthLoopView = (LoopView) contentView.findViewById(R.id.picker_month);
+        dayLoopView = (LoopView) contentView.findViewById(R.id.picker_day);
+        pickerContainerV = contentView.findViewById(R.id.container_picker);
+
 
         initPickerViews(); // init year and month loop view
         initDayPickerView(); //init day loop view
 
-        cancelBtn.setOnClickListener(this);
-        confirmBtn.setOnClickListener(this);
-        contentView.setOnClickListener(this);
-
-        setTouchable(true);
-        setFocusable(true);
-        // setOutsideTouchable(true);
-        setContentView(contentView);
-        setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
-    /**
-     * Init year and month loop view,
-     * Let the day loop view be handled separately
-     */
     private void initPickerViews() {
 
         int yearCount = builder.maxYear - builder.minYear;
@@ -217,9 +233,6 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
         monthLoopView.setInitPosition(monthPos);
     }
 
-    /**
-     * Init day item
-     */
     private void initDayPickerView() {
 
         int dayMaxInMonth;
@@ -228,7 +241,6 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
 
         calendar.set(Calendar.YEAR, builder.minYear + yearPos);
         calendar.set(Calendar.MONTH, monthPos);
-
         //get max day in month
         dayMaxInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
@@ -240,11 +252,6 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
         dayLoopView.setInitPosition(dayPos);
     }
 
-    /**
-     * set selected date position value when initView.
-     *
-     * @param dateStr
-     */
     public void setSelectedDate(String dateStr) {
 
         if (!TextUtils.isEmpty(dateStr)) {
@@ -261,10 +268,6 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
             }
         }
     }
-
-    /**
-     * Show date picker popWindow
-     */
     public void showPopWin() {
 
         if (builder != null && null != builder.mActivity) {
@@ -376,7 +379,7 @@ public class DatePickerPopWin extends PopupWindow implements OnClickListener {
          * @param year
          * @param month
          * @param day
-         * @param dateDesc yyyy-MM-dd
+         * @param dateDesc
          */
         void onDatePickCompleted(int year, int month, int day, String dateDesc);
     }

@@ -133,6 +133,7 @@ public class StepsView extends LinearLayout implements StepsViewIndicator.OnDraw
                     textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                     textView.setTypeface(null, Typeface.BOLD);
                     mLabelsLayout.addView(textView);
+                    return;
                 }
 
             }

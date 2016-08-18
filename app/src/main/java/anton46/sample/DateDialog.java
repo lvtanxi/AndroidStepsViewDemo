@@ -1,11 +1,13 @@
 package anton46.sample;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import java.text.SimpleDateFormat;
@@ -14,10 +16,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static android.view.View.GONE;
+
 
 public class DateDialog extends Dialog implements View.OnClickListener {
     private static final String deFormat = "yyyy年MM月dd日";
-    private Context context;
     private ScrollerNumberPicker yearPicker, monthPicker, dayPicker;
     private Calendar cal;
     private String months_big = "135781012";
@@ -31,18 +34,30 @@ public class DateDialog extends Dialog implements View.OnClickListener {
     private TimeDialogConfirmBack confirmBack;
     private Button cancel, confirm;
     private boolean hideDayPicker = false;
+    private Context mContext;
 
     public DateDialog(Context context) {
         super(context, R.style.def_alert_dialog);
-        this.context = context;
+        mContext=context;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.choose_data_dialog);
+        WindowManager m =((Activity)mContext).getWindowManager();
+        Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
+        android.view.WindowManager.LayoutParams p = getWindow().getAttributes();  //获取对话框当前的参数值
+        p.width =getDisplayMetrics();  //宽度设置为全屏
+        getWindow().setAttributes(p);
         initView();
         binaData();
         setListener();
+    }
+    public  int getDisplayMetrics() {
+        DisplayMetrics dm = new DisplayMetrics();
+        ((Activity) mContext).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        return dm.widthPixels;
     }
 
     private void setListener() {
@@ -157,16 +172,14 @@ public class DateDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initView() {
-        View view = LayoutInflater.from(context).inflate(R.layout.choose_data_dialog, null);
-        yearPicker = (ScrollerNumberPicker) view.findViewById(R.id.choose_year);
-        monthPicker = (ScrollerNumberPicker) view.findViewById(R.id.choose_month);
-        dayPicker = (ScrollerNumberPicker) view.findViewById(R.id.choose_day);
+        yearPicker = (ScrollerNumberPicker) findViewById(R.id.choose_year);
+        monthPicker = (ScrollerNumberPicker) findViewById(R.id.choose_month);
+        dayPicker = (ScrollerNumberPicker) findViewById(R.id.choose_day);
         if (hideDayPicker) {
-            dayPicker.setVisibility(View.GONE);
+            dayPicker.setVisibility(GONE);
         }
-        cancel = (Button) view.findViewById(R.id.choose_time_cancel);
-        confirm = (Button) view.findViewById(R.id.choose_time_confirm);
-        setContentView(view, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        cancel = (Button) findViewById(R.id.choose_time_cancel);
+        confirm = (Button) findViewById(R.id.choose_time_confirm);
         cal = Calendar.getInstance();
         year = 0 == year ? cal.get(Calendar.YEAR) : year;
         month = 0 == month ? cal.get(Calendar.MONTH) + 1 : month;

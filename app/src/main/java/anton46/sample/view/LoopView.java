@@ -109,7 +109,7 @@ public class LoopView extends View {
             mCenterLineColor = array.getColor(R.styleable.LoopView_plineColor, 0xffc5c5c5);
             mCanLoop = array.getBoolean(R.styleable.LoopView_canLoop, true);
             mInitPosition = array.getInt(R.styleable.LoopView_initPosition, -1);
-            mTextSize = array.getDimensionPixelSize(R.styleable.LoopView_textSize, sp2px(context, 16));
+            mTextSize = array.getDimensionPixelSize(R.styleable.LoopView_textSize, sp2px(context, 14));
             mDrawItemsCount = array.getInt(R.styleable.LoopView_drawItemCount, 7);
             array.recycle();
         }
@@ -187,11 +187,8 @@ public class LoopView extends View {
             if (textWidth > mMaxTextWidth) {
                 mMaxTextWidth = textWidth;
             }
-            int textHeight = rect.height();
-            if (textHeight > mMaxTextHeight) {
-                mMaxTextHeight = textHeight;
-            }
         }
+        mMaxTextHeight = sp2px(getContext(), 20);
     }
 
     @Override
