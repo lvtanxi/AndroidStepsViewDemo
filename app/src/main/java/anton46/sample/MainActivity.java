@@ -10,11 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.anton46.stepsview.StepsView;
-
-import anton46.sample.view.popwindow.DatePickerDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if(position%2==0){
-                    new DatePickerDialog.Builder(MainActivity.this)
+                    new WheelDateDailog(MainActivity.this).show();
+                   /* new DatePickerDialog.Builder(MainActivity.this)
                             .onDatePickedListener(new DatePickerDialog.OnDatePickedListener() {
                                 @Override
                                 public void onDatePickCompleted(int year, int month, int day, String dateDesc) {
@@ -47,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
                             })
                             .minYear(2016) //min year in loop
                             .build()
-                            .show();
+                            .show();*/
                     return;
                 }
                      DateDialog dateDialog=new DateDialog(MainActivity.this);
-                dateDialog.show();
+                dateDialog.setMinYear(2016)
+                .show();
             }
         });
     }
@@ -88,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
             TextView mLabel;
             StepsView mStepsView;
-
             public ViewHolder(View view) {
                 mLabel = (TextView) view.findViewById(R.id.label);
                 mStepsView = (StepsView) view.findViewById(R.id.stepsView);
@@ -96,4 +94,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBundle("c",getWindow().saveHierarchyState());
+        super.onSaveInstanceState(outState);
+    }
 }

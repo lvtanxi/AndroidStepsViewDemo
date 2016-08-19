@@ -17,11 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 滑动选择
- * <p>
- * author zd
- */
-public class ScrollerNumberPicker extends View {
+* User: 吕勇 
+* Date: 2016-07-18 
+* Time: 16:18
+* Description:
+*/  
+public class NumberPicker extends View {
     /**
      * 控件宽度
      */
@@ -120,19 +121,17 @@ public class ScrollerNumberPicker extends View {
      */
     private boolean isClearing = false;
 
-    public ScrollerNumberPicker(Context context, AttributeSet attrs, int defStyle) {
+    public NumberPicker(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs);
         initData();
     }
 
-    public ScrollerNumberPicker(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-        initData();
+    public NumberPicker(Context context, AttributeSet attrs) {
+        this(context, attrs,0);
     }
 
-    public ScrollerNumberPicker(Context context) {
+    public NumberPicker(Context context) {
         super(context);
         initData();
     }
@@ -660,8 +659,7 @@ public class ScrollerNumberPicker extends View {
                 textPaint.setColor(selectedColor);
                 // 获取距离标准位置的距离
                 float moveToSelect = moveToSelected();
-                moveToSelect = moveToSelect > 0 ? moveToSelect : moveToSelect
-                        * (-1);
+                moveToSelect = moveToSelect > 0 ? moveToSelect : moveToSelect * (-1);
                 // 计算当前字体大小
                 float textSize =  normalFont + ( (selectedFont - normalFont) * (1.0f -  moveToSelect /  unitHeight));
                 textPaint.setTextSize(textSize);

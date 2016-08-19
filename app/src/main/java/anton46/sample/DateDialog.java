@@ -5,9 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 
 import java.text.SimpleDateFormat;
@@ -21,15 +19,15 @@ import static android.view.View.GONE;
 
 public class DateDialog extends Dialog implements View.OnClickListener {
     private static final String deFormat = "yyyy年MM月dd日";
-    private ScrollerNumberPicker yearPicker, monthPicker, dayPicker;
+    private NumberPicker yearPicker, monthPicker, dayPicker;
     private Calendar cal;
-    private String months_big = "135781012";
     private int year;
     private int month;
     private int day;
     private int yearIndex;
     private int dayIndex;
     private int count = 0;
+    private int minYear=1940;
     private TimeDialogCancelBack cancelBack;
     private TimeDialogConfirmBack confirmBack;
     private Button cancel, confirm;
@@ -45,8 +43,6 @@ public class DateDialog extends Dialog implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_data_dialog);
-        WindowManager m =((Activity)mContext).getWindowManager();
-        Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
         android.view.WindowManager.LayoutParams p = getWindow().getAttributes();  //获取对话框当前的参数值
         p.width =getDisplayMetrics();  //宽度设置为全屏
         getWindow().setAttributes(p);
@@ -64,7 +60,7 @@ public class DateDialog extends Dialog implements View.OnClickListener {
         cancel.setOnClickListener(this);
         confirm.setOnClickListener(this);
         if (hideDayPicker) return;
-        yearPicker.setOnSelectListener(new ScrollerNumberPicker.OnSelectListener() {
+        yearPicker.setOnSelectListener(new NumberPicker.OnSelectListener() {
 
             @Override
             public void selecting(int id, String text) {
@@ -76,29 +72,25 @@ public class DateDialog extends Dialog implements View.OnClickListener {
                 int selectedY = Integer.valueOf(text.replace("年", ""));
                 if (year != selectedY) {
                     year = selectedY;
-                    dayPicker.setData(getDays(selectedY, String.valueOf(month)));
+                    changeDays();
                 }
             }
         });
-        monthPicker.setOnSelectListener(new ScrollerNumberPicker.OnSelectListener() {
+        monthPicker.setOnSelectListener(new NumberPicker.OnSelectListener() {
 
             @Override
             public void selecting(int id, String text) {
             }
 
             @Override
-            public void endSelect(int id, String text) {
-                int selectedM = Integer.valueOf(text.replace("月", ""));
-                if (month != selectedM) {
-                    month = selectedM;
-                    dayPicker.setData(getDays(year, String.valueOf(month)));
-                    dayIndex = 0 == dayIndex ? day - 1 : dayIndex;
-                    dayIndex = dayIndex >= count ? count - 1 : dayIndex;
-                    dayPicker.setDefault(dayIndex);
+            public void endSelect(int index, String text) {
+                if (month != index) {
+                    month = index;
+                    changeDays();
                 }
             }
         });
-        dayPicker.setOnSelectListener(new ScrollerNumberPicker.OnSelectListener() {
+        dayPicker.setOnSelectListener(new NumberPicker.OnSelectListener() {
 
             @Override
             public void selecting(int id, String text) {
@@ -112,55 +104,53 @@ public class DateDialog extends Dialog implements View.OnClickListener {
 
     }
 
+    private void changeDays(){
+        dayPicker.setData(getDays(year, month));
+        dayIndex = 0 == dayIndex ? day - 1 : dayIndex;
+        dayIndex = dayIndex >= count ? count - 1 : dayIndex;
+        dayPicker.setDefault(dayIndex);
+    }
+
     private void binaData() {
         yearPicker.setData(getYears());
         yearPicker.setDefault(yearIndex);
         monthPicker.setData(getMonths());
         monthPicker.setDefault(month - 1);
         if (!hideDayPicker) {
-            dayPicker.setData(getDays(year, String.valueOf(month)));
+            dayPicker.setData(getDays(year,month-1));
             dayPicker.setDefault(day - 1);
         }
     }
-
-    private List<String> getDays(int cyear, String cmonth) {
+    private List<String> getDays(int cyear, int cmonth) {
         List<String> days = new ArrayList<>();
-        if ("2".equals(cmonth)) {
-            // 闰年
-            if ((cyear % 4 == 0 && cyear % 100 != 0) || cyear % 400 == 0)
-                count = 29;
-            else
-                count = 28;
-        } else if (months_big.contains(cmonth)) {
-            count = 31;
-        } else {
-            count = 30;
-        }
-        for (int i = 1; i < 10; i++) {
-            days.add("0" + i + "日");
-        }
-        for (int i = 10; i <= count; i++) {
-            days.add(i + "日");
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR,cyear);
+        calendar.set(Calendar.MONTH, cmonth);
+        //get max day in month
+        count= calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int i = 0; i < count; i++) {
+            days.add(format2LenStr(i + 1, "日"));
         }
         return days;
     }
 
+    public  String format2LenStr(int num, String unit) {
+        return ((num < 10) ? "0" + num : String.valueOf(num)) + unit;
+    }
+
     private List<String> getMonths() {
-        List<String> months = new ArrayList<String>();
-        for (int i = 1; i < 10; i++) {
-            months.add("0" + i + "月");
-        }
-        for (int i = 10; i <= 12; i++) {
-            months.add(i + "月");
+        List<String> months = new ArrayList<>();
+        for (int i = 1; i < 13; i++) {
+            months.add(format2LenStr(i,"月"));
         }
         return months;
     }
 
     private List<String> getYears() {
-        List<String> years = new ArrayList<String>();
+        List<String> years = new ArrayList<>();
         int nowYear = cal.get(Calendar.YEAR);
         boolean flag = true;
-        for (int i = 1940; i <= nowYear; i++) {
+        for (int i = minYear; i <= nowYear; i++) {
             if (year != i && flag) {
                 yearIndex++;
             } else {
@@ -172,9 +162,9 @@ public class DateDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initView() {
-        yearPicker = (ScrollerNumberPicker) findViewById(R.id.choose_year);
-        monthPicker = (ScrollerNumberPicker) findViewById(R.id.choose_month);
-        dayPicker = (ScrollerNumberPicker) findViewById(R.id.choose_day);
+        yearPicker = (NumberPicker) findViewById(R.id.choose_year);
+        monthPicker = (NumberPicker) findViewById(R.id.choose_month);
+        dayPicker = (NumberPicker) findViewById(R.id.choose_day);
         if (hideDayPicker) {
             dayPicker.setVisibility(GONE);
         }
@@ -212,11 +202,11 @@ public class DateDialog extends Dialog implements View.OnClickListener {
     }
 
     public interface TimeDialogCancelBack {
-        public void cancelBack();
+         void cancelBack();
     }
 
     public interface TimeDialogConfirmBack {
-        public void confirmBack(DateDialog dataDialog);
+         void confirmBack(DateDialog dataDialog);
     }
 
     @Override
@@ -278,4 +268,8 @@ public class DateDialog extends Dialog implements View.OnClickListener {
         return this;
     }
 
+    public DateDialog setMinYear(int minYear) {
+        this.minYear = minYear;
+        return this;
+    }
 }
